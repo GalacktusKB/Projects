@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    // Get and display Process ID (PID)
+    pid_t pid = getpid();
+    printf("PID: %d\n", pid);
+
+    // Get and display Parent Process ID (PPID)
+    pid_t ppid = getppid();
+    printf("PPID: %d\n", ppid);
+
+    // Get and display User ID (UID)
+    uid_t uid = getuid();
+    printf("UID: %d\n", uid);
+
+    return 0;
+}
+//output:
+//PID: 47963
+//PPID: 47679
+//UID: 1000
+
