@@ -1,0 +1,119 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+import java.util.*;
+
+class InvalidSalaryException extends Exception {
+    public InvalidSalaryException(String message) {
+        super(message);
+    }
+}
+
+class Employee {
+    protected String name;
+    protected int employeeId;
+
+    public Employee(String name, int employeeId) {
+        this.name = name;
+        this.employeeId = employeeId;
+    }
+
+    public void calculateSalary() {
+        System.out.println("Base Salary Calculation");
+    }
+
+    public void setSalary(int salary) throws InvalidSalaryException {
+        if (salary < 0) {
+            throw new InvalidSalaryException("Salary cannot be negative");
+        }
+    }
+}
+
+class Manager extends Employee {
+    private int bonus;
+
+    public Manager(String name, int employeeId, int bonus) {
+        super(name, employeeId);
+        this.bonus = bonus;
+    }
+
+    @Override
+    public void calculateSalary() {
+        int totalSalary = 50000 + bonus;
+        System.out.println("Manager's Salary: " + totalSalary);
+    }
+
+    @Override
+    public void setSalary(int salary) throws InvalidSalaryException {
+        super.setSalary(salary);
+        if (salary < 50000) {
+            throw new InvalidSalaryException("Manager's salary should be at least 50000");
+        }
+    }
+}
+
+class Developer extends Employee {
+    private int overtimeHours;
+
+    public Developer(String name, int employeeId, int overtimeHours) {
+        super(name, employeeId);
+        this.overtimeHours = overtimeHours;
+    }
+
+    @Override
+    public void calculateSalary() {
+        int totalSalary = 40000 + (overtimeHours * 100);
+        System.out.println("Developer's Salary: " + totalSalary);
+    }
+
+    @Override
+    public void setSalary(int salary) throws InvalidSalaryException {
+        super.setSalary(salary);
+        if (salary < 40000) {
+            throw new InvalidSalaryException("Developer's salary should be at least 40000");
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            Employee[] employees = new Employee[3];
+            employees[0] = new Manager("John", 101, 5000);
+            employees[1] = new Developer("Alice", 102, 10);
+            employees[2] = new Developer("Bob", 103, 5);
+
+            for (Employee employee : employees) {
+                employee.calculateSalary();
+            }
+
+            Manager manager = new Manager("Sam", 104, 3000);
+            try {
+                manager.setSalary(45000);
+                System.out.println("Manager's salary set successfully.");
+            } catch (InvalidSalaryException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+
+            Developer developer = new Developer("Eve", 105, 8);
+            try {
+                developer.setSalary(35000);
+                System.out.println("Developer's salary set successfully.");
+            } catch (InvalidSalaryException e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+/*Manager's Salary: 55000
+Developer's Salary: 41000
+Developer's Salary: 40500
+Error: Manager's salary should be at least 50000
+Error: Developer's salary should be at least 40000*/
