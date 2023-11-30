@@ -1,0 +1,102 @@
+class Book {
+    private String title;
+    private String author;
+    private int publishYear;
+
+    public Book(String title, String author, int publishYear) {
+        this.title = title;
+        this.author = author;
+        this.publishYear = publishYear;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public int getPublishYear() {
+        return publishYear;
+    }
+}
+
+class Library {
+    private Book[] books;
+    private int bookCount;
+
+    public Library(int maxBooks) {
+        this.books = new Book[maxBooks];
+        this.bookCount = 0;
+    }
+
+    public void addBook(Book book) {
+        if (bookCount < books.length) {
+            books[bookCount++] = book;
+        } else {
+            System.out.println("Library is full. Cannot add more books.");
+        }
+    }
+
+    public void removeBook(Book book) {
+        for (int i = 0; i < bookCount; i++) {
+            if (books[i].equals(book)) {
+                // Shift books to fill the gap
+                for (int j = i; j < bookCount - 1; j++) {
+                    books[j] = books[j + 1];
+                }
+                books[--bookCount] = null; // Set the last element to null
+                break;
+            }
+        }
+    }
+
+    public void displayBooks() {
+        System.out.println("Library Books:");
+        for (int i = 0; i < bookCount; i++) {
+            Book book = books[i];
+            System.out.println("Title: " + book.getTitle());
+            System.out.println("Author: " + book.getAuthor());
+            System.out.println("Publish Year: " + book.getPublishYear());
+            System.out.println("--------------------------");
+        }
+    }
+}
+
+public class LibraryDemo {
+    public static void main(String[] args) {
+        // Create a Library with a maximum of 10 books
+        Library library = new Library(10);
+
+        // Add books to the library
+        Book book1 = new Book("The Catcher in the Rye", "J.D. Salinger", 1951);
+        Book book2 = new Book("To Kill a Mockingbird", "Harper Lee", 1960);
+
+        library.addBook(book1);
+        library.addBook(book2);
+
+        // Display books in the library
+        library.displayBooks();
+
+        // Remove a book from the library
+        library.removeBook(book1);
+
+        // Display books after removal
+        library.displayBooks();
+    }
+}
+/*Library Books:
+Title: The Catcher in the Rye
+Author: J.D. Salinger
+Publish Year: 1951
+--------------------------
+Title: To Kill a Mockingbird
+Author: Harper Lee
+Publish Year: 1960
+--------------------------
+Library Books:
+Title: To Kill a Mockingbird
+Author: Harper Lee
+Publish Year: 1960
+--------------------------*/
