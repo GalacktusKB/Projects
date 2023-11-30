@@ -1,0 +1,127 @@
+package sevenb;
+
+import java.util.LinkedList;
+
+class SharedBuffer {
+    private LinkedList<Integer> buffer = new LinkedList<>();
+    private int capacity;
+    private Object lock = new Object();
+
+    public SharedBuffer(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public void produce(int item) throws InterruptedException {
+        synchronized (lock) {
+            while (buffer.size() == capacity) {
+                lock.wait();
+            }
+
+            buffer.add(item);
+            System.out.println("Produced: " + item);
+            lock.notifyAll();
+        }
+    }
+
+    public void consume() throws InterruptedException {
+        synchronized (lock) {
+            while (buffer.isEmpty()) {
+                lock.wait();
+            }
+
+            int item = buffer.remove();
+            System.out.println("Consumed: " + item);
+            lock.notifyAll();
+        }
+    }
+}
+class Producer extends Thread {
+    private SharedBuffer buffer;
+
+    public Producer(SharedBuffer buffer) {
+        this.buffer = buffer;
+    }
+
+    @Override
+    public void run() {
+        try {
+            for (int i = 0; i < 5; i++) {
+                buffer.produce(i);
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+class Consumer extends Thread {
+    private SharedBuffer buffer;
+
+    public Consumer(SharedBuffer buffer) {
+        this.buffer = buffer;
+    }
+
+    @Override
+    public void run() {
+        try {
+            for (int i = 0; i < 5; i++) {
+                buffer.consume();
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+public class ProducerConsumerDemo {
+    public static void main(String[] args) {
+        SharedBuffer buffer = new SharedBuffer(2);
+
+        Producer producer = new Producer(buffer);
+        Consumer consumer = new Consumer(buffer);
+
+        producer.start();
+        consumer.start();
+    }
+}
+/*Produced: 0
+Consumed: 0
+Produced: 1
+Consumed: 1
+Produced: 2
+Consumed: 2
+Produced: 3
+Consumed: 3
+Produced: 4
+Consumed: 4*/
+
+
+/*Advantages and Differences between using locks and traditional synchronization:
+
+Fine-Grained Control:
+
+Traditional Synchronization: Provides coarse-grained control with synchronized blocks.
+Locks and Conditions: Offers more fine-grained control with explicit Lock and Condition instances.
+Condition Variables:
+
+Traditional Synchronization: Uses implicit wait(), notify(), and notifyAll() methods.
+Locks and Conditions: Utilizes Condition objects, providing more control over waiting and signaling conditions.
+Interruptible Locking:
+
+Traditional Synchronization: Lacks built-in support for interruption during locks.
+Locks and Conditions: Supports interruptible locking with lock.lockInterruptibly().
+Try-Lock Operations:
+
+Traditional Synchronization: Lacks built-in support for non-blocking lock attempts.
+Locks and Conditions: Provides tryLock() method, allowing threads to attempt acquiring locks without blocking.
+Locking Hierarchy:
+
+Traditional Synchronization: No explicit support for lock hierarchies.
+Locks and Conditions: Supports lock hierarchies, helping to avoid potential deadlock situations.
+Read and Write Locks:
+
+Traditional Synchronization: Supports only exclusive locks.
+Locks and Conditions: Supports separate read and write locks, allowing multiple threads to hold read locks simultaneously.
+In summary, using locks and conditions provides more advanced features and fine-grained control compared to traditional 
+synchronization with synchronized blocks, especially in scenarios where explicit control over locking and signaling is required.
+*/
