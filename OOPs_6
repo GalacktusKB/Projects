@@ -1,0 +1,138 @@
+class ReaderWriter {
+    private String sharedResource = "Shared Data";
+    private int readersCount = 0;
+    private int writersCount = 0;
+
+    public synchronized void read(int readerId) {
+        try {
+            while (writersCount > 0) {
+                wait();
+            }
+
+            readersCount++;
+            System.out.println("Reader " + readerId + " is reading: " + sharedResource);
+            Thread.sleep(1000); // Simulating reading
+
+            readersCount--;
+            if (readersCount == 0) {
+                notifyAll(); // Notify waiting writers
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void write(int writerId, String newData) {
+        try {
+            writersCount++;
+            while (readersCount > 0 || writersCount > 1) {
+                wait();
+            }
+
+            System.out.println("Writer " + writerId + " is writing: " + newData);
+            Thread.sleep(2000); // Simulating writing
+            sharedResource = newData;
+
+            writersCount--;
+
+            notifyAll(); // Notify waiting readers and writers
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+class Reader extends Thread {
+    private int readerId;
+    private ReaderWriter rw;
+
+    public Reader(int readerId, ReaderWriter rw) {
+        this.readerId = readerId;
+        this.rw = rw;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            rw.read(readerId);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+class Writer extends Thread {
+    private int writerId;
+    private ReaderWriter rw;
+
+    public Writer(int writerId, ReaderWriter rw) {
+        this.writerId = writerId;
+        this.rw = rw;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            String newData = "New Data written by Writer " + writerId;
+            rw.write(writerId, newData);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ReaderWriter rw = new ReaderWriter();
+
+        // Creating reader threads
+        Thread[] readerThreads = new Thread[3];
+        for (int i = 0; i < readerThreads.length; i++) {
+            readerThreads[i] = new Reader(i + 1, rw);
+            readerThreads[i].start();
+        }
+
+        // Creating writer threads
+        Thread[] writerThreads = new Thread[2];
+        for (int i = 0; i < writerThreads.length; i++) {
+            writerThreads[i] = new Writer(i + 1, rw);
+            writerThreads[i].start();
+        }
+    }
+}
+/*Reader 1 is reading: Shared Data
+Writer 2 is writing: New Data written by Writer 2
+Writer 1 is writing: New Data written by Writer 1
+Reader 3 is reading: New Data written by Writer 1
+Reader 2 is reading: New Data written by Writer 1
+Reader 3 is reading: New Data written by Writer 1
+Writer 1 is writing: New Data written by Writer 1
+Writer 2 is writing: New Data written by Writer 2
+Reader 1 is reading: New Data written by Writer 2
+Writer 1 is writing: New Data written by Writer 1
+Reader 3 is reading: New Data written by Writer 1
+Reader 2 is reading: New Data written by Writer 1
+Reader 3 is reading: New Data written by Writer 1
+Writer 1 is writing: New Data written by Writer 1
+Reader 1 is reading: New Data written by Writer 1
+Writer 2 is writing: New Data written by Writer 2
+Reader 1 is reading: New Data written by Writer 2
+Writer 1 is writing: New Data written by Writer 1
+Reader 3 is reading: New Data written by Writer 1
+Reader 2 is reading: New Data written by Writer 1
+Reader 3 is reading: New Data written by Writer 1
+Writer 1 is writing: New Data written by Writer 1
+Reader 1 is reading: New Data written by Writer 1
+Writer 2 is writing: New Data written by Writer 2
+Reader 1 is reading: New Data written by Writer 2
+Writer 1 is writing: New Data written by Writer 1
+Reader 3 is reading: New Data written by Writer 1
+Reader 2 is reading: New Data written by Writer 1
+Reader 3 is reading: New Data written by Writer 1
+^C*/
