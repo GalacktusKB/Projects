@@ -1,0 +1,133 @@
+// Abstract class Shape
+abstract class Shape {
+    private String color;
+    private boolean filled;
+
+    // Constructor
+    public Shape(String color, boolean filled) {
+        this.color = color;
+        this.filled = filled;
+    }
+
+    // Abstract method to calculate area
+    public abstract double calculateArea();
+
+    // Abstract method to display details
+    public abstract void displayDetails();
+
+    // Getters for color and filled
+    public String getColor() {
+        return color;
+    }
+
+    public boolean isFilled() {
+        return filled;
+    }
+}
+
+// Interface Resizable
+interface Resizable {
+    void resize(int percentage);
+}
+
+// Circle class, derived from Shape and implements Resizable
+class Circle extends Shape implements Resizable {
+    private double radius;
+
+    // Constructor
+    public Circle(String color, boolean filled, double radius) {
+        super(color, filled);
+        this.radius = radius;
+    }
+
+    // Implementation of calculateArea for Circle
+    @Override
+    public double calculateArea() {
+        return Math.PI * radius * radius;
+    }
+
+    // Implementation of displayDetails for Circle
+    @Override
+    public void displayDetails() {
+        System.out.println("Circle - Color: " + getColor() + ", Filled: " + isFilled() + ", Radius: " + radius);
+    }
+
+    // Implementation of resize for Circle
+    @Override
+    public void resize(int percentage) {
+        radius *= (1.0 + (percentage / 100.0));
+    }
+}
+
+// Rectangle class, derived from Shape and implements Resizable
+class Rectangle extends Shape implements Resizable {
+    private double width;
+    private double height;
+
+    // Constructor
+    public Rectangle(String color, boolean filled, double width, double height) {
+        super(color, filled);
+        this.width = width;
+        this.height = height;
+    }
+
+    // Implementation of calculateArea for Rectangle
+    @Override
+    public double calculateArea() {
+        return width * height;
+    }
+
+    // Implementation of displayDetails for Rectangle
+    @Override
+    public void displayDetails() {
+        System.out.println("Rectangle - Color: " + getColor() + ", Filled: " + isFilled() +
+                ", Width: " + width + ", Height: " + height);
+    }
+
+    // Implementation of resize for Rectangle
+    @Override
+    public void resize(int percentage) {
+        width *= (1.0 + (percentage / 100.0));
+        height *= (1.0 + (percentage / 100.0));
+    }
+}
+
+// Main class for demonstration
+public class ShapeDemo {
+    public static void main(String[] args) {
+        // Create instances of Circle and Rectangle
+        Circle circle = new Circle("Red", true, 5.0);
+        Rectangle rectangle = new Rectangle("Blue", false, 4.0, 6.0);
+
+        // Display details and calculate area before resizing
+        System.out.println("Before Resizing:");
+        circle.displayDetails();
+        System.out.println("Area: " + circle.calculateArea());
+
+        rectangle.displayDetails();
+        System.out.println("Area: " + rectangle.calculateArea());
+
+        // Resize the shapes
+        circle.resize(20);
+        rectangle.resize(15);
+
+        // Display details and calculate area after resizing
+        System.out.println("\nAfter Resizing:");
+        circle.displayDetails();
+        System.out.println("Area: " + circle.calculateArea());
+
+        rectangle.displayDetails();
+        System.out.println("Area: " + rectangle.calculateArea());
+    }
+}
+/*Before Resizing:
+Circle - Color: Red, Filled: true, Radius: 5.0
+Area: 78.53981633974483
+Rectangle - Color: Blue, Filled: false, Width: 4.0, Height: 6.0
+Area: 24.0
+
+After Resizing:
+Circle - Color: Red, Filled: true, Radius: 6.0
+Area: 113.09733552923255
+Rectangle - Color: Blue, Filled: false, Width: 4.6, Height: 6.8999999999999995
+Area: 31.739999999999995*/
