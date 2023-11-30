@@ -1,0 +1,37 @@
+echo "Enter marks of 1st subject "
+read m1 
+echo "Enter marks of 2nd subject "
+read m2
+echo "Enter marks of 3rd subject "
+read m3 
+sum=`expr $m1 + $m2 + $m3`
+echo "Total marks= " $sum
+avg=`expr $sum / 3`
+echo " Average marks : " $avg
+if [ $avg -gt 100 -o $avg -lt 0 ]
+then
+   grade="Invalid Marks";
+elif [ $avg -gt 89 -a $avg -le 100 ]
+then
+grade='O';
+elif [ $avg -gt 79 -a $avg -le 90 ]
+then
+grade='E'
+elif [ $avg -gt 69 -a $avg -le 80 ]
+then
+grade='A'
+elif [ $avg -gt 59 -a $avg -le 70 ]
+then
+grade='B'
+elif [ $avg -gt 49 -a $avg -le 60 ]
+then
+grade='C';
+elif [ $avg -gt 39 -a $avg -le 50 ]
+then
+grade='D'
+else
+grade='F'
+fi
+echo "Grade is = " $grade
+
+
